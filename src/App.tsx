@@ -36,7 +36,7 @@ import { type Schema } from "../amplify/data/resource";
 const wrighOff = [5, 7, 10];
 const client = generateClient<Schema>();
 
-type CustomerSchema = Schema["User"]["type"];
+type CustomerSchema = Schema["Bonuses"]["type"];
 
 interface CustomerStateType {
   customer: CustomerSchema;
@@ -78,7 +78,7 @@ function SetBonusButton({customer, setCustomer}: CustomerStateType) {
   function setBonus() {
     client
       .mutations.AddBonus({
-        userId: customer.id,
+        id: customer.id,
       }).then(({ data }) => {
         if (data) {
           setCustomer(data);
@@ -118,7 +118,7 @@ function WriteOffBonusesButton(
   function writeOffBonuses() {
     client
       .mutations.WriteOffBonuses({
-        userId: customer.id,
+        id: customer.id,
         decrement: count
       }).then(({ data }) => {
         if (data) {
@@ -156,7 +156,7 @@ export default function App() {
 
   const [ customer, setCustomer ] = useState<CustomerSchema | null>(null);
   const { toast } = useToast();
-  const newWriteOff = wrighOff.filter((num) => customer && customer.bonusPoints >= num);
+  const newWriteOff = wrighOff.filter((num) => customer?.bonusPoints && customer.bonusPoints >= num);
 
   console.log({ newWriteOff });
 
@@ -165,7 +165,7 @@ export default function App() {
 
   function getCustomer(customerId: string) {
     client
-      .models.User.get({ 
+      .models.Bonuses.get({ 
         id: customerId,
       })
       .then(({ data }) => {
