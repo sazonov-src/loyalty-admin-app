@@ -154,16 +154,14 @@ function WriteOffBonusesButton(
 
 export default function App() {
 
-  const [ customer, setCustomer ] = useState<CustomerSchema | null>(null);
+  const [ bonuses, setBonuses ] = useState<CustomerSchema | null>(null);
   const { toast } = useToast();
-  const newWriteOff = wrighOff.filter((num) => customer?.bonusPoints && customer.bonusPoints >= num);
-
-  console.log({ newWriteOff });
+  const newWriteOff = wrighOff.filter((num) => bonuses?.bonusPoints && bonuses.bonusPoints >= num);
 
   useEffect(() => {
-  }, [customer]);
+  }, [bonuses]);
 
-  function getCustomer(customerId: string) {
+  function getBonuses(customerId: string) {
     client
       .models.Bonuses.get({ 
         id: customerId,
@@ -177,27 +175,27 @@ export default function App() {
             description: "Customer not found",
             variant: "destructive",
           })
-        setCustomer(data)
+        setBonuses(data)
       })
       .catch((err) => alert(err));
   }
 
   return (
       <div className="flex flex-col items-center justify-center h-screen"> 
-      <Authenticator>
+      <Authenticator hideSignUp={true}>
         {({ signOut }) => (
           <> 
-            { customer ? (
+            { bonuses ? (
               <Card className=''>
                 <CardHeader className='flex flex-col items-center justify-center'>
                   <CardTitle>Бонуси клієнта</CardTitle>
-                  <CardDescription>{ customer.id }</CardDescription>
+                  <CardDescription>{ bonuses.id }</CardDescription>
                 </CardHeader>
                 <CardContent className='flex flex-col items-center justify-center'>
-                  <p className='text-5xl font-bold'>{ customer.bonusPoints }</p>
+                  <p className='text-5xl font-bold'>{ bonuses.bonusPoints }</p>
                 </CardContent>
                 <CardFooter className='flex flex-col items-center justify-center'>
-                  <SetBonusButton {...{ customer, setCustomer }}/>
+                  <SetBonusButton {...{ customer: bonuses, setCustomer: setBonuses }}/>
                   { newWriteOff.length > 0 && (
                     <>
                     <Separator className="my-5" />
@@ -205,8 +203,8 @@ export default function App() {
                     { newWriteOff.map((num) => (
                       <WriteOffBonusesButton 
                       {...{ 
-                        customer, 
-                        setCustomer, 
+                        customer: bonuses, 
+                        setCustomer: setBonuses, 
                         count: num }}/>
                     ))}
                     </div>
@@ -217,14 +215,14 @@ export default function App() {
             ) : (
               <div className="w-[500px] h-[500px]">
                 <Scanner onScan={
-                  (result) => getCustomer(
+                  (result) => getBonuses(
                     result[0].rawValue.toString()
                     // "b7d5ada8-2044-4ffe-9ce0-45281049d0f7"
                   )} />
               </div>
             )}
               <Button 
-                 onClick={ () => setCustomer(null) }
+                 onClick={ () => setBonuses(null) }
                  className='m-12'
               > 
                 Завершити сеанс
