@@ -184,7 +184,7 @@ export default function App() {
 
   return (
       <div className="flex flex-col items-center justify-center h-screen"> 
-      <Authenticator hideSignUp={true}>
+      <Authenticator>
         {({ signOut }) => (
           <> 
             { customer ? (
